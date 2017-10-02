@@ -1,0 +1,178 @@
+<html>
+<head>
+  <title>horizontal boxplot</title>
+  <meta charset="utf-8" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" type="text/JavaScript"></script>
+</head>
+<style>
+svg {
+  border: 1px solid gray;
+}
+
+line {
+  shape-rendering: crispEdges;
+  stroke: #000000;
+}
+
+line.minor  {
+  stroke: #777777;
+  stroke-dasharray: 2,2;
+}
+
+path.domain {
+  fill: none;
+  stroke: black;
+}
+
+</style>
+<body>
+</body>
+    
+<script>
+
+d3.csv("data/box_job_title.csv", boxplot)
+
+function boxplot(data){
+
+  var h = 1000,
+      w = 1000;
+
+  var margin = {
+    'top': 20,
+    'bottom': 20,
+    'left': 200,
+    'right':200 
+  }
+
+  var cols = d3.keys(data[0]).filter(function(d){return d!=="";});
+
+  console.log(cols);
+
+  d3.select("body").append("svg")
+    .attr("height", h)
+    .attr("width", w);
+
+
+  xScale = d3.scale.linear()
+    .domain([d3.min(data, function(d){return d.min;}), d3.max(data, function(d){return d.max;})]) // 0% to 100%
+    .range([
+      margin.left,
+      w - margin.right
+    ]);
+
+ dom = [];
+  data.forEach(function(d,i){
+	dom.push(d[cols[0]]);
+});
+
+  yScale = d3.scale.ordinal()
+    .domain(dom)    
+    .rangePoints([
+      h - margin.bottom,
+      margin.top
+    ],1);
+
+  xAxis = d3.svg.axis()
+    .scale(xScale)
+    .orient("bottom")
+    .ticks(10)
+    .tickSize(-470)
+    .tickSubdivide(true); // deprecated, I know
+
+  d3.select("svg").append("g")
+    .attr("transform", "translate(0,"+(h-margin.bottom)+")")
+    .attr("id", "xAxisG")
+    .call(xAxis);
+
+  var days = data.map(function(d){return d[cols[0]]});
+
+  yAxis = d3.svg.axis()
+    .scale(yScale)
+    .orient("right")
+    .tickSize(-470);
+    //.tickValues(days);
+    
+
+  d3.select("svg").append("g")
+    .attr("transform", "translate("+(w-margin.right)+",0)")
+    .attr("id", "yAxisG")
+    .call(yAxis);
+
+  d3.select("svg").selectAll("circle.median")
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("class", "tweets")
+    .attr("r", 5)
+    .attr("cx", function(d) {return xScale(d.median)})
+    .attr("cy", function(d) {return yScale(d[cols[0]])})
+    .style("fill", "none");
+
+  d3.select("svg").selectAll("g.box")
+    .data(data)
+    .enter()
+    .append("g")
+    .attr("class", "box")
+    .attr("transform", function(d){
+      return "translate(" + xScale(d.median) + "," + 
+        yScale(d[cols[0]]) + ")"
+    })
+    .each(function(d,i){
+      
+      d3.select(this)
+        .append("line")
+        .attr("class", "range")
+        .attr("x1", xScale(d.max) - xScale(d.median))
+        .attr("x2", xScale(d.min) - xScale(d.median))
+        .attr("y1", 0)
+        .attr("y2", 0)
+        .style("stroke", "black")
+        .style("stroke-width", "4px");
+
+      d3.select(this)
+        .append("line")
+        .attr("class", "max")
+        .attr("x1", xScale(d.max) - xScale(d.median))
+        .attr("x2", xScale(d.max) - xScale(d.median))
+        .attr("y1", -10)
+        .attr("y2", 10)
+        .style("stroke", "black")
+        .style("stroke-width", "4px");
+
+      d3.select(this)
+        .append("line")
+        .attr("class", "min")
+        .attr("x1", xScale(d.min) - xScale(d.median))
+        .attr("x2", xScale(d.min) - xScale(d.median))
+        .attr("y1", -10)
+        .attr("y2", 10)
+        .style("stroke", "black")
+        .style("stroke-width", "4px");        
+
+      d3.select(this)
+        .append("rect")
+        .attr("class", "range")
+        .attr("x", xScale(d.q1) - xScale(d.median))
+        .attr("y", -10)
+        .attr("height", 20)
+        .attr("width", xScale(d.q3) - xScale(d.q1))
+        .style("fill", "white")
+        .style("stroke", "black")
+        .style("stroke-width", "2px");
+
+      d3.select(this)
+        .append("line")
+        .attr("x1", 0)
+        .attr("x2", 0)
+        .attr("y1", -10)
+        .attr("y2", 10)
+        .style("stroke", "darkgray")
+        .style("stroke-width", "4px");
+        
+    })
+}
+
+</script>
+  </footer>
+
+</html>

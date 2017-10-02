@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+	.state{
+		fill: none;
+		stroke: #a9a9a9;
+		stroke-width: 1;
+	}
+	.state:hover{
+		fill-opacity:0.5;
+	}
+	#tooltip {   
+		position: absolute;           
+		text-align: center;
+		padding: 20px;             
+		margin: 10px;
+		font: 12px sans-serif;        
+		background: lightsteelblue;   
+		border: 1px;      
+		border-radius: 2px;           
+		pointer-events: none;         
+	}
+	#tooltip h4{
+		margin:0;
+		font-size:14px;
+	}
+	#tooltip{
+		background:rgba(0,0,0,0.9);
+		border:1px solid grey;
+		border-radius:5px;
+		font-size:12px;
+		width:auto;
+		padding:4px;
+		color:white;
+		opacity:0;
+	}
+	#tooltip table{
+		table-layout:fixed;
+	}
+	#tooltip tr td{
+		padding:0;
+		margin:0;
+	}
+	#tooltip tr td:nth-child(1){
+		width:50px;
+	}
+	#tooltip tr td:nth-child(2){
+		text-align:center;
+	}
+
+	
+		#xaxis .domain {
+		fill:none;
+		stroke:#000;
+		}
+		#xaxis text, #yaxis text {
+			font-size: 12px;
+		}
+
+		/*<!-- for Parallel Plot -->*/
+
+		svg {
+		  font: 10px sans-serif;
+		}
+
+		.background path {
+		  fill: none;
+		  stroke: #ddd;
+		  shape-rendering: crispEdges;
+		}
+
+		.foreground path {
+		  fill: none;
+		  stroke: yellow;
+		}
+
+		.brush .extent {
+		  fill-opacity: .3;
+		  stroke: #fff;
+		  shape-rendering: crispEdges;
+		}
+
+		.axis line,
+		.axis path {
+		  fill: none;
+		  stroke: #000;
+		  shape-rendering: crispEdges;
+		}
+
+		.axis text {
+		  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+		  cursor: move;
+		}
+	.box {
+  font: 10px sans-serif;
+}
+
+.box line,
+.box rect,
+.box circle {
+  fill: steelblue;
+  stroke: #000;
+  stroke-width: 1px;
+}
+
+.box .center {
+  stroke-dasharray: 3,3;
+}
+
+.box .outlier {
+  fill: none;
+  stroke: #000;
+}
+
+
+</style>
+<body>
+<fieldset>
+<legend></legend>
+<center>
+<h2> H1B Data Visualisation</h2>
+<br>
+ 
+<button onclick="document.location.href='box_wage_details.html';" class="button1" style="width: 300px; height: 50px">Information based on Criteria</button>
+<button onclick="document.location.href='no_of_applicants.html';" class="button1" style="width: 300px; height: 50px">Information based on Applicants</button>
+
+<div id= "bar_chart"></div>
+<div id="tooltip"></div><!-- div to hold tooltip. -->
+<svg width="960" height="600" id="statesvg"></svg> <!-- svg to hold the map. -->
+<script src="uStates.js"></script> <!-- creates uStates. -->
+<script src="src/parallel.js"></script>
+<script src="src/box.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+	var svg = d3.select("#bar_chart")
+                .append("canvas")
+                .attr("width", 100)
+                .attr("height", 100);
+
+
+	function tooltipHtml(n, d){	/* function to create html content string in tooltip div. */
+		return "<h4>"+n+"</h4><table>"+
+			"<tr><td>2011</td><td>"+(d[2011])+"</td></tr>"+
+			"<tr><td>2012</td><td>"+(d[2012])+"</td></tr>"+
+			"<tr><td>2013</td><td>"+(d[2013])+"</td></tr>"+
+			"<tr><td>2014</td><td>"+(d[2014])+"</td></tr>"+
+			"<tr><td>2015</td><td>"+(d[2015])+"</td></tr>"+
+			"<tr><td>2016</td><td>"+(d[2016])+"</td></tr>"+
+			"<tr><td>Total</td><td>"+(d.total)+"</td></tr>"+
+				"</table>";
+	}
+
+  colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"]
+
+  d3.csv('data/appcount_state_yearwise_withid.csv', function(error, data) {
+    if (error) throw error;
+
+    columns = d3.keys(data[0]).filter(function(d){return d!=="";});
+
+    state_ids = [];
+    data.forEach(function(d) {
+        state_ids.push(d['ID'])
+    });
+	
+
+  	var sampleData ={};	/* Sample random data. */	
+  	state_ids
+  		.forEach(function(d,i){ 
+        var c_11 = Number(data[i]['2011']);
+        var c_12 = Number(data[i]['2012']);
+        var c_13 = Number(data[i]['2013']);
+        var c_14 = Number(data[i]['2014']);
+        var c_15 = Number(data[i]['2015']);
+        var c_16 = Number(data[i]['2016']);
+        var summ = c_11+c_12+c_13+c_14+c_15+c_16;
+
+		sampleData[d]={2011:c_11, 2012:c_12, 2013:c_13, 2014:c_14, 2015:c_15, 2016:c_16, 
+				// total: summ, color:d3.interpolate("#ffffcc", "#800026")(summ/1000000)}; 
+				total: summ, color:d3.interpolate("#ffffd9", "#000000")(summ/1000000)}; 
+  		});
+
+      // console.log(sampleData);
+
+      /* draw states on id #statesvg */ 
+    uStates.draw("#statesvg", sampleData, tooltipHtml);
+  	
+  });
+	   
+	d3.select(self.frameElement).style("height", "600px"); 
+	</script>
+</script>
+</center>
+</fieldset>
+</body>

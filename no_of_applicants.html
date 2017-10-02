@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang ="en">
+
+  <head>
+    <meta charset="utf-8">
+      <title>Project</title>
+    <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+
+     
+    <script src = "src/bar_chart.js"></script>
+    <script src = "src/parallel.js"></script>
+    <script src = "src/scree_plot.js"></script>
+    <script src = "src/scree_plot_multi.js"></script>
+
+  </head>
+  <body onload="plot_scree('year_applicants.csv')">
+
+    <style>
+    .button1 {
+    background-color: white;
+    color: black;
+    border: 2px solid #4CAF50; /* Green */
+}
+    .dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+        </style>
+
+
+
+  <fieldset>
+  <legend><b><font color="Blue"></font></b></legend>
+  <center>
+  <br>
+  <br>
+  <button onclick="document.location.href='index.html';" type="button1" style="width: 150px; height: 50px">Home</button>
+
+  <button onclick="plot_scree_multi('year_case_status.csv')" type="button1" style="width: 250px; height: 50px">All Other Cases</button>
+ 
+
+
+  <div id  = "bar_chart"></div>
+  <br>
+  <br>
+  
+  <script type="text/javascript">
+
+    var w = 1000;
+    var h = 700;
+    var pad = 20;
+    var left_pad = 100;
+    
+
+    var svg = d3.select("#bar_chart")
+                .append("svg")
+                .attr("width", w)
+                .attr("height", h);
+
+
+    function refresh() {
+        svg.attr("width", w)
+        .attr("height", h);
+    } 
+ 
+ 
+</script>
+</center>
+   
+  </fieldset>
+  </body>
+</html>
+    
+   

@@ -1,0 +1,335 @@
+
+<!DOCTYPE html>
+<html lang ="en">
+
+	<head>
+		<meta charset="utf-8">
+    	<title>Project</title>
+		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+
+		 
+		<script src = "src/bar_chart.js"></script>
+		<script src = "src/parallel.js"></script>
+    <script src = "src/binCountModify.js"></script>
+    <script src = "src/binWidthModify.js"></script>
+
+	</head>
+	<body onload="drawBarChart('appcount_employer_name_yearwise.csv','EMPLOYER_NAME','2011',false)">
+
+		<style>
+		#xaxis .domain {
+		fill:none;
+		stroke:#000;
+		}
+		#xaxis text, #yaxis text {
+			font-size: 12px;
+		}
+
+		/*<!-- for Parallel Plot -->*/
+
+		svg {
+		  font: 10px sans-serif;
+		}
+
+		.background path {
+		  fill: none;
+		  stroke: #ddd;
+		  shape-rendering: crispEdges;
+		}
+
+		.foreground path {
+		  fill: none;
+		  stroke: steelblue;
+		}
+
+		.brush .extent {
+		  fill-opacity: .3;
+		  stroke: #fff;
+		  shape-rendering: crispEdges;
+		}
+
+		.axis line,
+		.axis path {
+		  fill: none;
+		  stroke: #000;
+		  shape-rendering: crispEdges;
+		}
+
+		.axis text {
+		  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+		  cursor: move;
+		}
+		.button1 {
+    background-color: white;
+    color: black;
+    border: 2px solid #4CAF50; /* Green */
+}
+		.dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
+.slider {
+  position: relative;
+  top: 40px;
+  left: 40px;
+}
+
+.slider-tray {
+  position: absolute;
+  width: 100%;
+  height: 6px;
+  border: solid 1px #ccc;
+  border-top-color: #aaa;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.slider-handle {
+  position: absolute;
+  top: 3px;
+}
+
+.slider-handle-icon {
+  width: 14px;
+  height: 14px;
+  border: solid 1px #aaa;
+  position: absolute;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  top: -7px;
+  left: -7px;
+}
+.range-slider {
+  margin: 60px 0 0 0%;
+}
+
+
+// Range Slider
+$range-width: 100% !default;
+
+$range-handle-color: $shade-10 !default;
+$range-handle-color-hover: $teal !default;
+$range-handle-size: 20px !default;
+
+$range-track-color: $shade-1 !default;
+$range-track-height: 10px !default;
+
+$range-label-color: $shade-10 !default;
+$range-label-width: 60px !default;
+
+.range-slider {
+  width: $range-width;
+}
+
+.range-slider__range {
+  -webkit-appearance: none;
+  width: calc(100% - (#{$range-label-width + 13px}));
+  height: $range-track-height;
+  border-radius: 5px;
+  background: $range-track-color;
+  outline: none;
+  padding: 0;
+  margin: 0;
+
+  // Range Handle
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: $range-handle-size;
+    height: $range-handle-size;
+    border-radius: 50%;
+    background: $range-handle-color;
+    cursor: pointer;
+    transition: background .15s ease-in-out;
+
+    &:hover {
+      background: $range-handle-color-hover;
+    }
+  }
+
+  &:active::-webkit-slider-thumb {
+    background: $range-handle-color-hover;
+  }
+
+  &::-moz-range-thumb {
+    width: $range-handle-size;
+    height: $range-handle-size;
+    border: 0;
+    border-radius: 50%;
+    background: $range-handle-color;
+    cursor: pointer;
+    transition: background .15s ease-in-out;
+
+    &:hover {
+      background: $range-handle-color-hover;
+    }
+  }
+
+  &:active::-moz-range-thumb {
+    background: $range-handle-color-hover;
+  }
+}
+
+
+// Range Label
+.range-slider__value {
+  display: inline-block;
+  position: relative;
+  width: $range-label-width;
+  color: $shade-0;
+  line-height: 20px;
+  text-align: center;
+  border-radius: 3px;
+  background: $range-label-color;
+  padding: 5px 10px;
+  margin-left: 8px;
+
+  &:after {
+    position: absolute;
+    top: 8px;
+    left: -7px;
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-right: 7px solid $range-label-color;
+    border-bottom: 7px solid transparent;
+    content: '';
+  }
+}
+
+
+// Firefox Overrides
+::-moz-range-track {
+    background: $range-track-color;
+    border: 0;
+}
+
+input::-moz-focus-inner,
+input::-moz-focus-outer { 
+  border: 0; 
+}
+		</style>
+
+
+
+	<fieldset>
+	<legend><b><font color="Blue"></font></b></legend>
+	<center>
+	<br>
+	<br>
+<button onclick="document.location.href='index.html';" class="dropbtn">Home</button>
+<div class="dropdown">
+  <button class="dropbtn">Criteria</button>
+  <div class="dropdown-content">
+  <select onchange="chooseVariable1(this.value)" class="dropdown-content"  autocomplete="off">
+      <option value="appcount_employer_name_yearwise.csv,EMPLOYER_NAME">Employer</option>
+      <option value="appcount_state_yearwise.csv,STATE">Statewise</option>
+      <option value="appcount_job_title_yearwise.csv,JOB_TITLE">Job Title</option>
+</select>
+  </div>
+</div>
+<div class="dropdown">
+  <button class="dropbtn">Year</button>
+  <div class="dropdown-content">
+  <select onchange="chooseVariable2(this.value)" class="dropdown-content"  autocomplete="off">
+      <option value="2011">2011</option>
+      <option value="2012">2012</option>
+      <option value="2013">2013</option>
+       <option value="2014">2014</option>
+      <option value="2015">2015</option>
+      <option value="2016">2016</option>
+</select>
+  </div>
+</div>
+ 
+      <br><br>
+
+	<div id  = "bar_chart"></div>
+	<br>
+	<br>
+	<br>
+	<script type="text/javascript">
+
+  	var w = 1900;
+    var h = 1200;
+    // var pad = 20;
+    // var left_pad = 100;
+    
+
+    var svg = d3.select("#bar_chart")
+                .append("canvas")
+                .attr("width", w)
+                .attr("height", h);
+
+
+    /* function refresh() {
+        svg.attr("width", w)
+        .attr("height", h);
+    } */
+
+    var file = "appcount_employer_name_yearwise.csv"
+    var year = "2011"
+    var key1 = "EMPLOYER_NAME"
+
+    function chooseVariable1(val){
+    	filearr = val.split(",");
+    	key1 = filearr[1];
+    	file = filearr[0];
+    	drawBarChart(file,key1,year,false);
+    }
+    function chooseVariable2(val){
+    	year = val;
+    	drawBarChart(file, key1, year,false);
+    }
+
+
+</script>
+</center>
+	 
+  </fieldset>
+  </body>
+</html>
+		
+	 
